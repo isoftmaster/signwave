@@ -1,6 +1,6 @@
 # SignWave - Real-Time AI Sign Language Translator
 
-**Developer:** Tanveer Alam
+**Project By:** Tanveer Alam
 
 ---
 
@@ -82,4 +82,4 @@ You can train the AI to learn your own unique gestures!
    ```
 
 ---
-*Developed by Tanveer Alam*
+**Project By:** Tanveer Alam
