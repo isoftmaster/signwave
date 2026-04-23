@@ -1,56 +1,35 @@
-# SignWave - Ukrainian Sign Language Translator
+# SignWave - Real-Time AI Sign Language Translator
 
-**Demo:** https://mriya-wave.co.uk
-
-> **🥈 2nd Place** - **Ukrainian Student Business Hackathon** <br>
-> ⚡ Real-Time Computer Vision and Sequence Learning System
-
----
-
-![Demo 1](photos/photo1.png)
-![Demo 2](photos/photo2.png)
-![Demo 3](photos/photo3.png)
+**Developer:** Tanveer Alam
 
 ---
 
 ## Overview
 
-SignWave is a real-time system that translates Ukrainian Sign Language (USL) into spoken language using computer vision and deep learning.
-It is designed for environments where interpreters are unavailable (clinics, schools, public services).
+SignWave is a real-time system that translates Sign Language into spoken language using computer vision and deep learning. 
+It is designed to be completely local, offline, and free—bridging the communication gap between deaf individuals and hearing people in environments where interpreters are unavailable (clinics, schools, public services).
 
-In Ukraine, at least 30,600 people are officially registered with hearing impairments, while global estimates indicate 1.5B people with some degree of hearing loss.
-Primary use cases include hospitals, schools, government offices, and customer service desks.
+This project features a beautiful web dashboard that can be accessed remotely via a mobile device (QR code integration) to act as a live subtitle screen. It also features a two-way communication system using the Web Speech API.
 
 ---
 
 ## How It Works
 
-- Capture live video from a webcam or device camera
-- Detect hands and upper-body landmarks with MediaPipe
-- Encode keypoints and aggregate short temporal windows
-- Classify sequences with a Bi-LSTM model
-- Render text output and generate speech with ElevenLabs
+- **Computer Vision:** Captures live video from a webcam and detects hands and upper-body landmarks using MediaPipe.
+- **Deep Learning:** Encodes skeleton keypoints into mathematical sequences and classifies them in real-time using a custom PyTorch Bi-LSTM neural network.
+- **Offline TTS:** Uses Windows Native SAPI (PowerShell) for zero-latency offline text-to-speech generation.
+- **Web Dashboard:** Streams a live MJPEG feed and Server-Sent Events (SSE) to a premium glassmorphism dashboard built with Vanilla CSS and Flask.
 
 ---
 
 ## Core Features
 
-- Real-time multi-landmark tracking (hands + upper body)
-- Temporal gesture recognition using sequence models
-- Continuous inference via sliding windows
-- Low-latency local execution
-- Text + speech output
-
----
-
-## Architecture
-
-- Client UI (React/Vite)
-- Streaming backend (Flask) with video ingestion
-- Computer vision pipeline (OpenCV + MediaPipe)
-- Feature encoding and sequence windowing
-- Bi-LSTM inference service (PyTorch)
-- Output layer (text + ElevenLabs speech)
+- ⚡ **Real-time multi-landmark tracking** (hands + upper body)
+- 🧠 **Temporal gesture recognition** using sequence PyTorch models
+- 🎙️ **Zero-latency offline TTS** (Text-to-Speech)
+- 📱 **Mobile Dashboard Companion:** Generate a QR code to view live subtitles on a phone
+- 🎤 **Two-Way Communication:** Hearing people can use the microphone to transcribe text back to the deaf user
+- 🔒 **100% Privacy:** Fully local execution. No cloud APIs, no subscriptions.
 
 ---
 
@@ -58,28 +37,49 @@ Primary use cases include hospitals, schools, government offices, and customer s
 
 | Layer | Technologies |
 |------|--------------|
-| Frontend Experience | React, Vite, Tailwind CSS, Framer Motion |
-| Backend & APIs | Python, Flask, Werkzeug |
-| Computer Vision & Tracking | OpenCV, MediaPipe Holistic |
-| Machine Learning | PyTorch (Bi-LSTM) |
-| Voice | ElevenLabs |
-| Runtime | Python, CUDA |
-| Deployment | Docker |
-| Testing | PyTest |
+| **Frontend UI** | HTML5, Vanilla CSS (Glassmorphism), JavaScript |
+| **Backend & APIs** | Python, Flask, Server-Sent Events (SSE) |
+| **Computer Vision** | OpenCV, MediaPipe Holistic |
+| **Machine Learning** | PyTorch (Bi-LSTM) |
+| **Voice / Speech** | Windows SAPI (PowerShell), Web Speech API |
 
 ---
 
-## Business Track Context
+## Installation & Usage
 
-- Target users: people with hearing impairments + service staff
-- Primary settings: healthcare, education, government, customer support
-- Model: free access for end users, subscriptions for institutions
+1. **Clone the repository** and navigate to the folder.
+2. **Create a virtual environment:**
+   ```bash
+   python -m venv venv
+   .\venv\Scripts\activate
+   ```
+3. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Run the App:**
+   ```bash
+   python web_app.py
+   ```
+5. Open `http://localhost:5000` in your web browser. 
+6. (Optional) Scan the QR code on the dashboard to open the interface on your mobile phone on the same Wi-Fi network.
 
 ---
 
-## Why It Matters
+## Adding Custom Signs
 
-- Full real-time ML pipeline, not a demo script
-- Sequence-based modeling, not static pose classification
-- Practical deployment use case, not a toy project
-- Clear social + enterprise value
+You can train the AI to learn your own unique gestures!
+
+1. Open `label_map.json` and add your new word (e.g., `"7": "hello"`).
+2. Open `src/config_voice.py` and map the word to spoken text in `GESTURE_TO_TEXT`.
+3. Stop the web app, and run the recording script:
+   ```bash
+   python src/camera_record.py --gesture hello --reps 30
+   ```
+4. Retrain the model on the new data:
+   ```bash
+   python src/train.py
+   ```
+
+---
+*Developed by Tanveer Alam*

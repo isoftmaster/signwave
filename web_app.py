@@ -8,7 +8,8 @@ import threading
 import cv2
 import mediapipe as mp
 import torch
-from flask import Flask, Response, request
+from flask import Flask, Response, request, render_template
+import queue
 
 # Paths
 ROOT_DIR = Path(__file__).resolve().parent
@@ -20,7 +21,7 @@ if str(SRC_DIR) not in sys.path:
 from config_voice import CONF_THRESHOLD, MODEL_PATH, PREDICTION_STABILITY, WINDOW_SIZE
 from keypoints import KEYPOINT_VECTOR_LENGTH, extract_keypoints
 from model import GestureLSTM
-from tts_elevenlabs import speak_gesture
+from tts_free import speak_gesture
 from utils import draw_landmarks
 
 
@@ -29,6 +30,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Backend-only Flask app.
 app = Flask(__name__)
+sse_queues = []
 
 
 # ------------------------ LABELS ------------------------
@@ -108,6 +110,8 @@ def generate_frames():
                             if count >= PREDICTION_STABILITY:
                                 gesture = idx_to_label[most_common]
                                 print(f"Detected gesture: {gesture}")
+                                for q in sse_queues:
+                                    q.put(gesture)
                                 if not speak_gesture(gesture):
                                     print("Announcement skipped due to active cooldown.")
                                 prediction_buffer.clear()
@@ -130,13 +134,35 @@ def generate_frames():
     cap.release()
 
 
+import socket
+def get_local_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except:
+        return "127.0.0.1"
+
 @app.route("/")
 def index():
-    return (
-        "Backend is running. Use /video_feed for the MJPEG stream and /stop_infer "
-        "to stop inference.",
-        200,
-    )
+    port = int(os.getenv("PORT", "5000"))
+    local_url = f"http://{get_local_ip()}:{port}"
+    return render_template('index.html', local_url=local_url)
+
+@app.route("/gesture_events")
+def gesture_events():
+    def event_stream():
+        q = queue.Queue()
+        sse_queues.append(q)
+        try:
+            while True:
+                gesture = q.get()
+                yield f"data: {gesture}\n\n"
+        finally:
+            sse_queues.remove(q)
+    return Response(event_stream(), mimetype="text/event-stream")
 
 
 @app.route("/video_feed")

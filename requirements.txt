@@ -1,7 +1,7 @@
 # core (looser pins to support Python 3.12 / arm64 wheels)
 numpy>=2.2.0
 opencv-python>=4.12.0.88
-mediapipe>=0.10.14
+mediapipe==0.10.14
 protobuf<5
 imageio>=2.37.0
 imageio-ffmpeg>=0.4.8
@@ -16,8 +16,8 @@ matplotlib>=3.8.0
 tqdm>=4.67.0
 pandas>=2.2.0
 
-# optional TTS / later (ElevenLabs)
-elevenlabs>=0.2.1
+# optional TTS / local
+pyttsx3
 
 # web
 Flask>=3.0.3

@@ -27,7 +27,7 @@ import warnings
 import time
 from collections import deque, Counter
 
-from tts_elevenlabs import speak_gesture
+from tts_free import speak_gesture
 from config_voice import (
     ANNOUNCEMENT_COOLDOWN_SECONDS,
     CONF_THRESHOLD,
